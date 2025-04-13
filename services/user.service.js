@@ -80,3 +80,33 @@ module.exports.addToBlacklist = (token) => {
 module.exports.isTokenBlacklisted = (token) => {
   return tokenBlacklist.has(token); // Check if the token is blacklisted
 };
+
+// update user data
+module.exports.updateUser = async (id, updateData) => {
+  if (!id) {
+    throw new Error("User ID is required");
+  }
+
+  const { fullname, email, image } = updateData;
+  const updates = {};
+
+  if (fullname) updates.fullname = fullname;
+  if (email) updates.email = email;
+  if (image) updates.image = image;
+
+  if (Object.keys(updates).length === 0) {
+    throw new Error("No valid fields provided to update");
+  }
+
+  const updatedUser = await userModal.findByIdAndUpdate(
+    id,
+    { $set: updates },
+    { new: true, fields: "_id fullname email image" }
+  );
+
+  if (!updatedUser) {
+    throw new Error("User not found");
+  }
+
+  return updatedUser;
+};
