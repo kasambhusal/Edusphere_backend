@@ -26,6 +26,15 @@ module.exports.authenticateEmail = async ({ email }) => {
   }
 };
 
+module.exports.findUserById = async (id) => {
+  if (!id) {
+    throw new Error("User ID is required");
+  }
+
+  const user = await userModal.findById(id, "id email image fullname");
+  return user || null; // Return the user if found, otherwise null
+};
+
 module.exports.authenticateUser = async ({ email, password }) => {
   if (!email || !password) {
     throw new Error("Email and password are required");
