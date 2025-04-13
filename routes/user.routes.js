@@ -31,5 +31,6 @@ router.post("/logout", userController.logoutUser);
 router.post("/forgot-password", authController.forgotPassword);
 router.post("/verify-otp", authController.verifyOtp);
 router.post("/reset-password", authController.resetPassword);
+router.post("/modify-user", userController.modifyUser);
 
 module.exports = router;

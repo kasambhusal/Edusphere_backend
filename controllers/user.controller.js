@@ -24,6 +24,49 @@ module.exports.registerUser = async (req, res, next) => {
   res.status(200).json({ message: "User Registered !" });
 };
 
+module.exports.modifyUser = async (req, res, next) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { id } = req.params; // Assuming you pass the user ID in the URL params
+    const { fullname, email, image } = req.body;
+
+    // Find existing user by ID
+    const existingUser = await userService.findUserById(id);
+    if (!existingUser) {
+      return res.status(404).json({ errors: "User not found" });
+    }
+
+    // Check if new email is already taken by someone else
+    if (email && email !== existingUser.email) {
+      const emailTaken = await userService.authenticateEmail({ email });
+      if (emailTaken && emailTaken._id.toString() !== id) {
+        return res.status(400).json({ errors: "Email already in use" });
+      }
+    }
+
+    // Update user fields
+    const updatedUser = await userService.updateUser(id, {
+      fullname,
+      email,
+      image,
+    });
+
+    return res.status(200).json({
+      message: "User modified successfully!",
+      user: updatedUser,
+    });
+
+  } catch (err) {
+    console.error("Error modifying user:", err);
+    return res.status(500).json({ errors: "Server error" });
+  }
+};
+
+
 module.exports.loginUser = async (req, res, next) => {
   try {
     const errors = validationResult(req);
