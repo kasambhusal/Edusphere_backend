@@ -31,25 +31,25 @@ module.exports.modifyUser = async (req, res, next) => {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { id } = req.params; // Assuming you pass the user ID in the URL params
+    const { userid } = req.params;
     const { fullname, email, image } = req.body;
 
-    // Find existing user by ID
-    const existingUser = await userService.findUserById(id);
+    // Find user by ID
+    const existingUser = await userService.findUserById(userid);
     if (!existingUser) {
       return res.status(404).json({ errors: "User not found" });
     }
 
-    // Check if new email is already taken by someone else
+    // Check if the new email is already taken by another user
     if (email && email !== existingUser.email) {
       const emailTaken = await userService.authenticateEmail({ email });
-      if (emailTaken && emailTaken._id.toString() !== id) {
+      if (emailTaken && emailTaken._id.toString() !== userid) {
         return res.status(400).json({ errors: "Email already in use" });
       }
     }
 
-    // Update user fields
-    const updatedUser = await userService.updateUser(id, {
+    // Update user
+    const updatedUser = await userService.updateUser(userid, {
       fullname,
       email,
       image,
@@ -59,13 +59,11 @@ module.exports.modifyUser = async (req, res, next) => {
       message: "User modified successfully!",
       user: updatedUser,
     });
-
   } catch (err) {
     console.error("Error modifying user:", err);
     return res.status(500).json({ errors: "Server error" });
   }
 };
-
 
 module.exports.loginUser = async (req, res, next) => {
   try {
@@ -144,7 +142,7 @@ module.exports.updateUserMCQProgress = async (req, res) => {
 };
 module.exports.getReview = async (req, res) => {
   try {
-    const user = await userModal.findById(req.params.user_id);  
+    const user = await userModal.findById(req.params.user_id);
     console.log(user);
     if (!user) return res.status(404).json({ message: "User not found" });
     res.status(200).json(user.mcqProgress);

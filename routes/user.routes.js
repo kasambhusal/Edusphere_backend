@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { body } = require("express-validator");
+const { body, param } = require("express-validator");
 const userController = require("../controllers/user.controller");
 const authController = require("../controllers/auth.controller");
 router.post(
@@ -31,6 +31,10 @@ router.post("/logout", userController.logoutUser);
 router.post("/forgot-password", authController.forgotPassword);
 router.post("/verify-otp", authController.verifyOtp);
 router.post("/reset-password", authController.resetPassword);
-router.post("/modify-user", userController.modifyUser);
+router.post(
+  "/modify-user/:userid",
+  [param("userid").isMongoId().withMessage("Invalid user ID format")],
+  userController.modifyUser
+);
 
 module.exports = router;
