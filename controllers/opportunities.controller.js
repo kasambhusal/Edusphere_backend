@@ -2,17 +2,19 @@ const Opportunity = require("../models/opportunities.model.js");
 const userService = require("../services/user.service");
 const opportunityService = require("../services/opportunities.service.js");
 
-
 module.exports.getAllOpportunities = async (req, res) => {
-    try {
-      const { category } = req.query;
-      const filter = category ? { category } : {};
-      const opportunities = await Opportunity.find(filter).populate("from", "fullname email");
-      res.status(200).json(opportunities);
-    } catch (error) {
-      res.status(500).json({ message: "Server error", error });
-    }
-  };
+  try {
+    const { category } = req.query;
+    const filter = category ? { category } : {};
+    const opportunities = await Opportunity.find(filter)
+      .populate("from", "fullname email")
+      .sort({ createdAt: -1 });
+    res.status(200).json(opportunities);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
+};
+
 // Get a single opportunity by ID
 module.exports.getOpportunityById = async (req, res) => {
   try {
