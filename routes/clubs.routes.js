@@ -37,7 +37,10 @@ router.post(
       return true;
     }),
 
-    body("image").optional().isURL().withMessage("Invalid image URL"),
+    body("image")
+      .optional({ checkFalsy: true })
+      .isURL()
+      .withMessage("Invalid image URL"),
 
     body("user_email").isEmail().withMessage("Invalid Email"),
   ],
