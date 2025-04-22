@@ -20,6 +20,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.get("/", (req, res) => {
+  console.log("Ping received at /"); 
   res.send("Hello World");
 });
 app.use("/users", userRoutes);
